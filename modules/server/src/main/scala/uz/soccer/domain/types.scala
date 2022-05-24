@@ -9,11 +9,14 @@ import io.estatico.newtype.macros.newtype
 import uz.soccer.types.uuid
 import io.circe.refined._
 import eu.timepit.refined.cats._
+import squants.market.Currency
 
 import java.util.UUID
 import javax.crypto.Cipher
 
 object types {
+  object UZS extends Currency("UZS", "Uzbek sum", "SUM", 2)
+
   @derive(decoder, encoder, show)
   @newtype case class UserName(value: NonEmptyString)
 

@@ -4,12 +4,11 @@ import org.http4s.MediaType
 import org.scalacheck.Arbitrary
 import org.scalacheck.Gen._
 import uz.soccer.domain.custom.refinements.{EmailAddress, FileName, Password, Tel}
-import uz.soccer.domain.{Gender, Role}
+import uz.soccer.domain.Role
 import uz.soccer.utils.Generators.{nonEmptyAlphaNumGen, nonEmptyStringGen, numberGen}
 
 object Arbitraries {
 
-  implicit lazy val arbGender: Arbitrary[Gender] = Arbitrary(oneOf(Gender.genders))
   implicit lazy val arbRole: Arbitrary[Role]     = Arbitrary(oneOf(Role.roles))
   implicit lazy val arbEmail: Arbitrary[EmailAddress] = Arbitrary(
     for {

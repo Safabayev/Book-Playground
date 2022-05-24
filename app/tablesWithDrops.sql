@@ -44,3 +44,10 @@ CREATE TABLE IF NOT EXISTS matches
 );
 
 CREATE TYPE ROLE AS ENUM ('admin', 'client', 'user');
+
+
+DROP TABLE matches;
+DROP TABLE player_teams;
+DROP TABLE stadiums;
+DROP TABLE teams;
+DROP TABLE users;

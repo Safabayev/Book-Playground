@@ -4,7 +4,7 @@ import cats.effect.{Resource, Sync}
 import cats.syntax.all._
 import skunk._
 import skunk.implicits._
-import uz.soccer.domain.Match.CreateMatch
+import uz.soccer.domain.Match.{CreateMatch, MatchWithUserName}
 import uz.soccer.domain.custom.exception.{DateTimeInCorrect, StadiumIdInCorrect}
 import uz.soccer.domain.types.MatchId
 import uz.soccer.domain.{ID, Match}
@@ -16,13 +16,13 @@ trait Matches[F[_]] {
 
   def update(`match`: Match): F[Unit]
 
-  def getAll: F[List[Match]]
+  def getAll: F[List[MatchWithUserName]]
 
   def delete(uuid: MatchId): F[Unit]
 }
 
 object Matches {
-  def apply[F[_]: Sync: GenUUID](implicit session: Resource[F, Session[F]]): Matches[F] = new Matches[F]
+  def apply[F[_] : Sync : GenUUID](implicit session: Resource[F, Session[F]]): Matches[F] = new Matches[F]
     with SkunkHelper[F] {
     override def create(`match`: CreateMatch): F[Match] =
       ID.make[F, MatchId]
@@ -39,7 +39,7 @@ object Matches {
     override def update(`match`: Match): F[Unit] =
       prepCmd(MatchSql.update, `match`)
 
-    override def getAll: F[List[Match]] =
+    override def getAll: F[List[MatchWithUserName]] =
       prepQueryAll(MatchSql.selectAll)
 
     override def delete(uuid: MatchId): F[Unit] =

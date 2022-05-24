@@ -18,7 +18,7 @@ object StadiumRoutesSuite extends HttpSuite {
   def stadiums[F[_]: Sync: GenUUID]: StadiumsStub[F] = new StadiumsStub[F] {
     override def create(createStadium: CreateStadium): F[Stadium] =
       ID.make[F, StadiumId].map { stadiumId =>
-        Stadium(stadiumId, createStadium.address, createStadium.owner, createStadium.tel)
+        Stadium(stadiumId, createStadium.address, createStadium.owner, createStadium.tel, createStadium.price)
       }
 
     override def getAll: F[List[Stadium]]           = List.empty[Stadium].pure[F]

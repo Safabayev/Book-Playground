@@ -5,10 +5,11 @@ import skunk.Codec
 import skunk.codec.all._
 import skunk.data.{Arr, Type}
 import uz.soccer.domain.custom.refinements.{EmailAddress, Tel}
-import uz.soccer.domain.types.{Address, Owner, TeamName, UserName}
-import uz.soccer.domain.{Gender, Role}
+import uz.soccer.domain.types.{Address, Owner, TeamName, UZS, UserName}
+import uz.soccer.domain.Role
 import uz.soccer.types.IsUUID
 import eu.timepit.refined.auto.autoUnwrap
+import squants.Money
 import tsec.passwordhashers.PasswordHash
 import tsec.passwordhashers.jca.SCrypt
 
@@ -36,11 +37,11 @@ package object sql {
 
   val tel: Codec[Tel] = varchar.imap[Tel](Tel.unsafeFrom)(_.value)
 
+  val price: Codec[Money] = numeric.imap[Money](money => UZS(money))(_.amount)
+
   val address: Codec[Address] = varchar.imap[Address](str => Address(NonEmptyString.unsafeFrom(str)))(_.value)
 
   val owner: Codec[Owner] = varchar.imap[Owner](str => Owner(NonEmptyString.unsafeFrom(str)))(_.value)
-
-  val gender: Codec[Gender] = `enum`[Gender](_.value, Gender.find, Type("gender"))
 
   val role: Codec[Role] = `enum`[Role](_.value, Role.find, Type("role"))
 

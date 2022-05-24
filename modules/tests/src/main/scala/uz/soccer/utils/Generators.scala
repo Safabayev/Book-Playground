@@ -4,13 +4,14 @@ import eu.timepit.refined.scalacheck.string._
 import eu.timepit.refined.types.string.NonEmptyString
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
+import squants.Money
 import uz.soccer.domain.Match.CreateMatch
 import uz.soccer.domain.Stadium.CreateStadium
 import uz.soccer.domain.Team.CreateTeam
 import uz.soccer.domain.User._
 import uz.soccer.domain.custom.refinements.{EmailAddress, FileName, Password, Tel}
 import uz.soccer.domain.types._
-import uz.soccer.domain.{Credentials, Gender, Match, Role, Stadium, Team, User}
+import uz.soccer.domain.{Credentials, Match, Role, Stadium, Team, User}
 import uz.soccer.utils.Arbitraries._
 
 import java.time.LocalDateTime
@@ -68,13 +69,13 @@ object Generators {
 
   val telGen: Gen[Tel] = arbitrary[Tel]
 
+  val priceGen: Gen[Money] = Gen.posNum[Long].map(n => UZS(BigDecimal(n)))
+
   val booleanGen: Gen[Boolean] = arbitrary[Boolean]
 
   val emailGen: Gen[EmailAddress] = arbitrary[EmailAddress]
 
   val filenameGen: Gen[FileName] = arbitrary[FileName]
-
-  val genderGen: Gen[Gender] = arbitrary[Gender]
 
   val roleGen: Gen[Role] = arbitrary[Role]
 
@@ -83,9 +84,9 @@ object Generators {
       i <- userIdGen
       n <- usernameGen
       e <- emailGen
-      g <- genderGen
+      t <- telGen
       r <- roleGen
-    } yield User(i, n, e, g, r)
+    } yield User(i, n, e, t, r)
 
   val userCredentialGen: Gen[Credentials] =
     for {
@@ -103,16 +104,17 @@ object Generators {
     for {
       u <- usernameGen
       e <- emailGen
-      g <- genderGen
+      t <- telGen
       p <- passwordGen
-    } yield CreateUser(u, e, g, p)
+    } yield CreateUser(u, e, t, p)
 
   val createStadiumGen: Gen[CreateStadium] =
     for {
       a <- addressGen
       o <- ownerGen
       t <- telGen
-    } yield CreateStadium(a, o, t)
+      p <- priceGen
+    } yield CreateStadium(a, o, t, p)
 
   val stadiumGen: Gen[Stadium] =
     for {
@@ -120,20 +122,23 @@ object Generators {
       a <- addressGen
       o <- ownerGen
       t <- telGen
-    } yield Stadium(i, a, o, t)
+      p <- priceGen
+    } yield Stadium(i, a, o, t, p)
 
   val createMatchGen: Gen[CreateMatch] =
     for {
+      ui <- userIdGen
+      s  <- stadiumIdGen
       st <- dateTimeGen
       et <- dateTimeGen
-      s  <- stadiumIdGen
-    } yield CreateMatch(st, et, s)
+    } yield CreateMatch(ui, s, st, et)
 
   val matchGen: Gen[Match] =
     for {
-      i  <- matchIdGen
+      ud <- matchIdGen
+      i  <- userIdGen
+      s  <- stadiumIdGen
       st <- dateTimeGen
       et <- dateTimeGen
-      s  <- stadiumIdGen
-    } yield Match(i, st, et, s)
+    } yield Match(ud, i, s, st, et)
 }

@@ -12,11 +12,11 @@ import uz.soccer.domain.{Role, User}
 object UserSQL {
   val userId: Codec[UserId] = identity[UserId]
 
-  private val Columns = userId ~ userName ~ email ~ gender ~ passwordHash ~ role
+  private val Columns = userId ~ userName ~ email ~ tel ~ passwordHash ~ role
 
   val encoder: Encoder[UserId ~ CreateUser ~ PasswordHash[SCrypt]] =
     Columns.contramap { case i ~ u ~ p =>
-      i ~ u.name ~ u.email ~ u.gender ~ p ~ Role.USER
+      i ~ u.name ~ u.email ~ u.phone ~ p ~ Role.USER
     }
   val decoder: Decoder[User ~ PasswordHash[SCrypt]] =
     Columns.map { case i ~ n ~ e ~ g ~ p ~ r =>

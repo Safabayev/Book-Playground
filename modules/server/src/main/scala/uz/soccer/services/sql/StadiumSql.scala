@@ -9,15 +9,15 @@ import uz.soccer.domain.types.StadiumId
 object StadiumSql {
   val stadiumId: Codec[StadiumId] = identity[StadiumId]
 
-  private val Columns = stadiumId ~ address ~ owner ~ tel
+  private val Columns = stadiumId ~ address ~ owner ~ tel ~ price
 
   val encoder: Encoder[StadiumId ~ CreateStadium] =
     Columns.contramap { case i ~ s =>
-      i ~ s.address ~ s.owner ~ s.tel
+      i ~ s.address ~ s.owner ~ s.tel ~ s.price
     }
   val decoder: Decoder[Stadium] =
-    Columns.map { case i ~ a ~ o ~ t =>
-      Stadium(i, a, o, t)
+    Columns.map { case i ~ a ~ o ~ t ~ p  =>
+      Stadium(i, a, o, t, p)
     }
 
   val insert: Query[StadiumId ~ CreateStadium, Stadium] =
@@ -30,8 +30,9 @@ object StadiumSql {
     sql"""UPDATE stadiums SET
            address = $address,
            owner = $owner,
-           tel = $tel WHERE uuid = $stadiumId
-       """.command.contramap(s => s.address ~ s.owner ~ s.tel ~ s.uuid)
+           tel = $tel,
+           price = $price WHERE uuid = $stadiumId
+       """.command.contramap(s => s.address ~ s.owner ~ s.tel ~ s.price ~ s.uuid )
 
   val delete: Command[StadiumId] =
     sql"""DELETE FROM stadiums WHERE uuid = $stadiumId""".command
