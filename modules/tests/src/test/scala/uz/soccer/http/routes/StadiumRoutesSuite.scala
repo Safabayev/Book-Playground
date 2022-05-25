@@ -6,6 +6,7 @@ import org.http4s.Method.{DELETE, GET, POST, PUT}
 import org.http4s.client.dsl.io._
 import org.http4s.implicits.http4sLiteralsSyntax
 import org.http4s.{Status, Uri}
+import uz.soccer.domain.Role.{ADMIN, CLIENT}
 import uz.soccer.domain.Stadium.CreateStadium
 import uz.soccer.domain.types.StadiumId
 import uz.soccer.domain.{ID, Stadium}
@@ -37,7 +38,8 @@ object StadiumRoutesSuite extends HttpSuite {
         token <- authToken(user)
         req    = POST(createStadium, uri"/stadium").putHeaders(token)
         routes = StadiumRoutes[IO](stadiums).routes(usersMiddleware)
-        res <- expectHttpStatus(routes, req)(Status.Created)
+        shouldReturn = if (user.role == CLIENT) Status.Created else Status.BadRequest
+        res <- expectHttpStatus(routes, req)(shouldReturn)
       } yield res
     }
   }
@@ -63,7 +65,8 @@ object StadiumRoutesSuite extends HttpSuite {
         token <- authToken(user)
         req    = PUT(stadium, uri"/stadium").putHeaders(token)
         routes = StadiumRoutes[IO](stadiums).routes(usersMiddleware)
-        res <- expectHttpStatus(routes, req)(Status.NoContent)
+        shouldReturn = if (user.role == CLIENT) Status.Created else Status.BadRequest
+        res <- expectHttpStatus(routes, req)(shouldReturn)
       } yield res
     }
   }
@@ -78,7 +81,8 @@ object StadiumRoutesSuite extends HttpSuite {
         token <- authToken(user)
         req    = DELETE(Uri.unsafeFromString(s"/stadium/$stadiumId")).putHeaders(token)
         routes = StadiumRoutes[IO](stadiums).routes(usersMiddleware)
-        res <- expectHttpStatus(routes, req)(Status.NoContent)
+        shouldReturn = if (user.role == CLIENT || user.role == ADMIN) Status.NoContent else Status.BadRequest
+        res <- expectHttpStatus(routes, req)(shouldReturn)
       } yield res
     }
   }
