@@ -10,6 +10,7 @@ lazy val root = (project in file("."))
   )
   .aggregate(server, tests)
 
+
 lazy val server = (project in file("modules/server"))
   .settings(
     name := "soccer",
@@ -32,6 +33,7 @@ lazy val tests = project
 
 val runTests = inputKey[Unit]("Runs tests")
 val runServer = inputKey[Unit]("Runs server")
+val runItTests = inputKey[Unit]("Runs It tests")
 
 runServer := {
   (server / Compile / run).evaluated
@@ -39,4 +41,8 @@ runServer := {
 
 runTests := {
   (tests / Test / test).value
+}
+
+runItTests := {
+  (tests / IntegrationTest / test).value
 }

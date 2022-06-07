@@ -3,7 +3,7 @@ package uz.soccer.services.sql
 import skunk._
 import skunk.implicits._
 import uz.soccer.domain.Stadium
-import uz.soccer.domain.Stadium.CreateStadium
+import uz.soccer.domain.Stadium.{CreateStadium, UpdateStadium}
 import uz.soccer.domain.types.StadiumId
 
 object StadiumSql {
@@ -16,7 +16,7 @@ object StadiumSql {
       i ~ s.address ~ s.owner ~ s.tel ~ s.price
     }
   val decoder: Decoder[Stadium] =
-    Columns.map { case i ~ a ~ o ~ t ~ p  =>
+    Columns.map { case i ~ a ~ o ~ t ~ p =>
       Stadium(i, a, o, t, p)
     }
 
@@ -26,13 +26,15 @@ object StadiumSql {
   val selectAll: Query[Void, Stadium] =
     sql"""SELECT * FROM stadiums""".query(decoder)
 
-  val update: Command[Stadium] =
-    sql"""UPDATE stadiums SET
-           address = $address,
+  val updateSql: Query[Stadium, Stadium] =
+    sql"""UPDATE stadiums
+       SET address = $address,
            owner = $owner,
            tel = $tel,
-           price = $price WHERE uuid = $stadiumId
-       """.command.contramap(s => s.address ~ s.owner ~ s.tel ~ s.price ~ s.uuid )
+           price = $price
+       WHERE uuid = $stadiumId RETURNING *"""
+      .query(decoder)
+      .contramap[Stadium](s => s.address ~ s.owner ~ s.tel ~ s.price ~ s.uuid)
 
   val delete: Command[StadiumId] =
     sql"""DELETE FROM stadiums WHERE uuid = $stadiumId""".command

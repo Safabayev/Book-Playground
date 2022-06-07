@@ -4,7 +4,7 @@ import cats.effect.{Resource, Sync}
 import cats.syntax.all._
 import skunk._
 import skunk.implicits._
-import uz.soccer.domain.Stadium.CreateStadium
+import uz.soccer.domain.Stadium.{CreateStadium, UpdateStadium}
 import uz.soccer.domain.types.StadiumId
 import uz.soccer.domain.{ID, Stadium}
 import uz.soccer.effects.GenUUID
@@ -13,7 +13,7 @@ import uz.soccer.services.sql.StadiumSql
 trait Stadiums[F[_]] {
   def create(stadium: CreateStadium): F[Stadium]
 
-  def update(stadium: Stadium): F[Unit]
+  def update(stadium: Stadium): F[Stadium]
 
   def getAll: F[List[Stadium]]
 
@@ -29,8 +29,8 @@ object Stadiums {
           prepQueryUnique(StadiumSql.insert, id ~ stadium)
         }
 
-    override def update(stadium: Stadium): F[Unit] =
-      prepCmd(StadiumSql.update, stadium)
+    override def update(stadium: Stadium): F[Stadium] =
+      prepQueryUnique(StadiumSql.updateSql, stadium)
 
     override def getAll: F[List[Stadium]] =
       prepQueryAll(StadiumSql.selectAll)

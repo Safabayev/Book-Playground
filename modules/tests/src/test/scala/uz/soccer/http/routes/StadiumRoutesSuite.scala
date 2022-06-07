@@ -23,7 +23,7 @@ object StadiumRoutesSuite extends HttpSuite {
       }
 
     override def getAll: F[List[Stadium]]           = List.empty[Stadium].pure[F]
-    override def update(team: Stadium): F[Unit]     = Sync[F].unit
+    override def update(team: Stadium): F[Stadium]  = Sync[F].delay(team)
     override def delete(teamId: StadiumId): F[Unit] = Sync[F].unit
   }
 
@@ -58,7 +58,7 @@ object StadiumRoutesSuite extends HttpSuite {
   test("PUT update stadium") {
     val gen = for {
       u <- userGen
-      s <- stadiumGen
+      s <- updateStadiumGen
     } yield (u, s)
     forall(gen) { case (user, stadium) =>
       for {

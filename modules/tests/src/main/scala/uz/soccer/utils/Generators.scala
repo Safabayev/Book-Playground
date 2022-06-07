@@ -6,12 +6,11 @@ import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
 import squants.Money
 import uz.soccer.domain.Match.CreateMatch
-import uz.soccer.domain.Stadium.CreateStadium
-import uz.soccer.domain.Team.CreateTeam
+import uz.soccer.domain.Stadium.{CreateStadium, UpdateStadium}
 import uz.soccer.domain.User._
 import uz.soccer.domain.custom.refinements.{EmailAddress, FileName, Password, Tel}
 import uz.soccer.domain.types._
-import uz.soccer.domain.{Credentials, Match, Role, Stadium, Team, User}
+import uz.soccer.domain.{Credentials, Match, Role, Stadium, User}
 import uz.soccer.utils.Arbitraries._
 
 import java.time.LocalDateTime
@@ -41,9 +40,6 @@ object Generators {
   val userIdGen: Gen[UserId] =
     idGen(UserId.apply)
 
-  val teamIdGen: Gen[TeamId] =
-    idGen(TeamId.apply)
-
   val stadiumIdGen: Gen[StadiumId] =
     idGen(StadiumId.apply)
 
@@ -58,10 +54,6 @@ object Generators {
 
   val ownerGen: Gen[Owner] =
     arbitrary[NonEmptyString].map(Owner.apply)
-
-  val teamNameGen: Gen[TeamName] = arbitrary[NonEmptyString].map(TeamName.apply)
-
-  val createTeamGen: Gen[CreateTeam] = teamNameGen.map(CreateTeam.apply)
 
   val passwordGen: Gen[Password] = arbitrary[Password]
 
@@ -94,12 +86,6 @@ object Generators {
       p <- passwordGen
     } yield Credentials(e, p)
 
-  val teamGen: Gen[Team] =
-    for {
-      i <- teamIdGen
-      n <- teamNameGen
-    } yield Team(i, n)
-
   val createUserGen: Gen[CreateUser] =
     for {
       u <- usernameGen
@@ -124,6 +110,15 @@ object Generators {
       t <- telGen
       p <- priceGen
     } yield Stadium(i, a, o, t, p)
+
+  val updateStadiumGen: Gen[UpdateStadium] =
+    for {
+      i <- stadiumIdGen
+      a <- addressGen
+      o <- ownerGen
+      t <- telGen
+      p <- priceGen
+    } yield UpdateStadium(i, a, o, t, p)
 
   val createMatchGen: Gen[CreateMatch] =
     for {

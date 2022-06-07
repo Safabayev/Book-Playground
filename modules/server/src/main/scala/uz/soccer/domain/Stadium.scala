@@ -17,7 +17,8 @@ case class Stadium(
   address: Address,
   owner: Owner,
   tel: Tel,
-  price: Money)
+  price: Money
+  )
 
 object Stadium {
   @derive(decoder, encoder, show)
@@ -25,5 +26,15 @@ object Stadium {
     address: Address,
     owner: Owner,
     tel: Tel,
-    price: Money)
+    price: Money
+  )
+
+  @derive(decoder, encoder, show)
+  case class UpdateStadium(
+    uuid: StadiumId,
+    address: Address,
+    owner: Owner,
+    tel: Tel,
+    price: Money
+  )
 }

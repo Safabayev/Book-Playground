@@ -8,7 +8,7 @@ import org.http4s.circe.JsonDecoder
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server.{AuthMiddleware, Router}
 import uz.soccer.domain.Role.{ADMIN, CLIENT}
-import uz.soccer.domain.Stadium.CreateStadium
+import uz.soccer.domain.Stadium.{CreateStadium, UpdateStadium}
 import uz.soccer.domain.types.StadiumId
 import uz.soccer.domain.{Stadium, User}
 import uz.soccer.services.Stadiums
